@@ -106,7 +106,7 @@ const FormularioActualizarProducto: React.FC<Props> = ({
           tiempoEstimadoMinutos: data.tiempoEstimadoCocina,
           unidadMedida: data.unidadMedida.id,
           precioVenta: data.precioVenta,
-          categoria: data.categoria,
+          categoria: data.categoria.id,
           imagen: data.imagen,
         });
         setSelectedInsumosData(
@@ -165,7 +165,10 @@ const FormularioActualizarProducto: React.FC<Props> = ({
       id: sucursalId,
       denominacion: "", // Consider filling this with actual data if available
     };
-
+    formattedValues.categoria = {
+      id: values.categoria,
+      denominacion: "", // You might want to fill this with actual data if available
+    };
     formattedValues.articuloManufacturadoDetalles = selectedInsumosData.map(
       (insumo) => ({
         cantidad: insumo.cantidad,

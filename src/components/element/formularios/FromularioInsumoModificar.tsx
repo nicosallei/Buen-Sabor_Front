@@ -10,6 +10,7 @@ import {
   Button,
   Switch,
   Image,
+  message,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import {
@@ -127,8 +128,8 @@ const FormularioInsumoModificar: React.FC<FormularioInsumoProps> = ({
       const token = await getAccessTokenSilently();
       await modificarInsumoId(values, formData.id, token);
       onClose();
-    } catch (error) {
-      console.error("Error al modificar insumo:", error);
+    } catch (error: any) {
+      message.error(error.message);
     }
     setIsModalVisible(false);
     onClose();

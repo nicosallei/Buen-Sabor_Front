@@ -11,6 +11,7 @@ import {
   Select,
   Switch,
   Upload,
+  message,
   notification,
 } from "antd";
 import { UploadFile } from "antd/es/upload/interface";
@@ -21,6 +22,7 @@ import {
 } from "../../../service/ServiceInsumos";
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
 import { crearManufacturado } from "../../../service/ServiceProducto";
+import { getCategoria } from "../../../service/ServiceProducto";
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface FormularioInsumoProps {
@@ -41,6 +43,7 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
   const [isParaElaborar, setIsParaElaborar] = useState(false); // Estado para controlar si es para elaborar
   const [unidadesMedida, setUnidadesMedida] = useState<unidadMedida[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [categorias, setCategorias] = useState<any[]>([]);
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
@@ -69,6 +72,20 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
     fetchUnidadesMedida();
   }, []);
 
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      if (!isParaElaborar && sucursalId) {
+        try {
+          const categoriasData = await getCategoria(Number(sucursalId));
+          setCategorias(categoriasData);
+        } catch (error) {
+          console.error("Error al obtener las categorías:", error);
+        }
+      }
+    };
+    fetchCategorias();
+  }, [isParaElaborar, sucursalId]);
+
   const onFinish = async (values: any) => {
     console.log("Received values of form: ", values);
     const formattedValues = { ...values };
@@ -81,6 +98,10 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
     formattedValues.sucursal = {
       id: values.sucursal,
       denominacion: values.nombreSucursal,
+    };
+    formattedValues.categoria = {
+      id: values.categoria,
+      denominacion: "", // You might want to fill this with actual data if available
     };
     if (values.imagenes) {
       const files: UploadFile[] = values.imagenes;
@@ -137,8 +158,8 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
           </span>
         ),
       });
-    } catch (error) {
-      console.error("Error: ", error);
+    } catch (error: any) {
+      message.error(error.message);
     }
   };
 
@@ -393,6 +414,26 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
             >
               <Switch onChange={handleSwitchChange} />
             </Form.Item>
+            {!isParaElaborar && (
+              <Form.Item
+                label="Categoría"
+                name="categoria"
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor selecciona una categoría",
+                  },
+                ]}
+              >
+                <Select>
+                  {categorias.map((categoria) => (
+                    <Select.Option key={categoria.id} value={categoria.id}>
+                      {categoria.denominacion}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            )}
           </Col>
         </Row>
         <Form.Item style={{ textAlign: "right" }}>

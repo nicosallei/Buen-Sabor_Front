@@ -24,10 +24,12 @@ const { Option } = Select;
 
 interface FormularioAgregarEmpresaProps {
   onClose: () => void;
+  onSucursalAdded: () => void;
 }
 
 const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
   onClose,
+  onSucursalAdded,
 }) => {
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
@@ -98,10 +100,11 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
         description: "Sucursal agregada correctamente",
       });
       handleOk();
+      onSucursalAdded();
       cargarDatos();
       //window.location.reload();
     } catch (error) {
-      console.error("Error creating sucursal:", error); // Log the error
+      console.error("Error al crear la sucursal:", error); // Log the error
       notification.error({
         message: "Error",
         description: "La sucursal no fue agregada, revise los datos",

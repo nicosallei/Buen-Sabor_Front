@@ -21,9 +21,19 @@ const Empresa = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const cargarDatosEmpresa = async () => {
+    try {
+      const response = await getTodasEmpresas();
+      setEmpresas(response);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setEmpresas([]);
+    }
+  };
 
   useEffect(() => {
-    getTodasEmpresas().then(setEmpresas);
+    cargarDatosEmpresa();
+    //getTodasEmpresas().then(setEmpresas);
   }, []);
 
   const openEditModal = (empresa: any) => {
@@ -152,7 +162,7 @@ const Empresa = () => {
             <Meta title={empresa.nombre} description={empresa.razonSocial} />
           </Card>
         ))}
-        <TarjetaAgregar />
+        <TarjetaAgregar onSucursalAdded={cargarDatosEmpresa} />
       </div>
 
       {selectedEmpresa && (

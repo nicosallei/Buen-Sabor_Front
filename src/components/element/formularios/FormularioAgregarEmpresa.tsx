@@ -6,10 +6,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 interface FormularioAgregarEmpresaProps {
   onClose: () => void;
+  onSucursalAdded: () => void;
 }
 
 const FormularioAgregarEmpresa: React.FC<FormularioAgregarEmpresaProps> = ({
   onClose,
+  onSucursalAdded,
 }) => {
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
@@ -48,9 +50,11 @@ const FormularioAgregarEmpresa: React.FC<FormularioAgregarEmpresaProps> = ({
       nombre: values.nombre,
       razonSocial: values.razonSocial,
       cuil: values.cuil,
+      imagen: imagenBase64,
     };
     const token = await getAccessTokenSilently();
     await crearEmpresa(formData, token);
+    onSucursalAdded();
     handleOk();
     // window.location.reload();
   };

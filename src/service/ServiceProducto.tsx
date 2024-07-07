@@ -87,12 +87,16 @@ export async function crearManufacturado(
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Error crear producto manufacturado"
+      );
     }
     return await response.json();
-  } catch (error) {
-    console.log("Error: ", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Error al crear producto manufacturado:", error.message);
+    throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
   }
 }
 

@@ -188,7 +188,7 @@ const Sucursal = () => {
             </Col>
           ))}
       </Row>
-      <TarjetaAgregar />
+      <TarjetaAgregar onSucursalAdded={cargarDatosSucursal} />
 
       {isModalVisible && currentSucursal && (
         <FormularioEditarSucursal
