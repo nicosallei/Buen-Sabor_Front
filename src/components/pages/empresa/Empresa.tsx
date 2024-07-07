@@ -141,7 +141,9 @@ const Empresa = () => {
                 key="edit"
                 onClick={(e) => {
                   e.stopPropagation();
-                  openEditModal(empresa);
+                  if (!empresa.eliminado) {
+                    openEditModal(empresa);
+                  }
                 }}
                 style={{ cursor: empresa.eliminado ? "default" : "pointer" }}
               />,

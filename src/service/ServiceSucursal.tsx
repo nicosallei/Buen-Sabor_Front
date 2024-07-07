@@ -71,6 +71,7 @@ export async function crearSucursal(formData: Sucursal, token: string) {
         nombre: formData.nombre,
         horaApertura: formData.horaApertura,
         horaCierre: formData.horaCierre,
+        imagen: formData.imagen,
         calle: formData.calle,
         cp: formData.cp,
         numero: formData.numero,
@@ -152,6 +153,7 @@ export async function actualizarSucursal(
       mode: "cors",
       body: JSON.stringify({
         id: id,
+        imagen: formData.imagen,
         nombre: formData.nombre,
         horaApertura: formData.horaApertura,
         horaCierre: formData.horaCierre,

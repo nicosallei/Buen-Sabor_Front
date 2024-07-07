@@ -52,7 +52,7 @@ const FormularioAgregarEmpresa: React.FC<FormularioAgregarEmpresaProps> = ({
     const token = await getAccessTokenSilently();
     await crearEmpresa(formData, token);
     handleOk();
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (
