@@ -125,18 +125,23 @@ const Empresa = () => {
             key={empresa.id}
             style={{
               width: 300,
+              height: "100%", // Ajustar el alto según sea necesario
               margin: "10px",
               opacity: empresa.eliminado ? 0.5 : 1,
             }}
             cover={
               <img
                 alt={empresa.nombre}
-                // Aquí se realiza la verificación y se elige la imagen
                 src={empresa.imagen ? empresa.imagen : imagenEmpresa}
                 onClick={() =>
                   empresa.eliminado ? null : navigate(`/sucursal/${empresa.id}`)
                 }
-                style={{ cursor: empresa.eliminado ? "default" : "pointer" }}
+                style={{
+                  cursor: empresa.eliminado ? "default" : "pointer",
+                  width: "100%", // Ajustar al 100% del contenedor
+                  height: "auto", // Mantener la proporción
+                  maxHeight: "200px", // Opcional: limitar la altura máxima
+                }}
               />
             }
             actions={[
