@@ -29,10 +29,11 @@ type DataIndex = keyof DataType;
 interface Props {
   empresaId: string;
   sucursalId: string;
+  reload: boolean;
   onReload: () => void; // Agregar el callback onReload
 }
 
-const App: React.FC<Props> = ({ sucursalId, onReload }) => {
+const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -44,19 +45,18 @@ const App: React.FC<Props> = ({ sucursalId, onReload }) => {
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    const fetchData = async () => {
-      setData([]); // Clear the data before fetching new products
-      try {
-        const data = await getProductoXSucursal(sucursalId); // Use sucursalId from props
-        setData(data);
-      } catch (error) {
-        console.error("Error al obtener los productos por sucursal:", error);
-      }
-    };
-
     fetchData();
-  }, [sucursalId]);
+  }, [sucursalId, reload]);
 
+  const fetchData = async () => {
+    setData([]); // Clear the data before fetching new products
+    try {
+      const data = await getProductoXSucursal(sucursalId); // Use sucursalId from props
+      setData(data);
+    } catch (error) {
+      console.error("Error al obtener los productos por sucursal:", error);
+    }
+  };
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps["confirm"],

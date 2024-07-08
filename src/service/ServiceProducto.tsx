@@ -152,15 +152,6 @@ export async function modificarProductoId(
   token: string
 ) {
   try {
-    console.log("estoy en el fetc");
-    console.log("data" + formData);
-    console.log("id:" + id);
-    console.log(
-      "----------------->" +
-        formData.categoria.id +
-        "---------" +
-        formData.categoria
-    );
     const urlServer = `http://localhost:8080/api/articulos/manufacturados/${id}`;
     const response = await fetch(urlServer, {
       method: "PUT",
@@ -187,12 +178,16 @@ export async function modificarProductoId(
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Error al editar el producto manufacturado"
+      );
     }
     return await response.json();
-  } catch (error) {
-    console.log("Error: ", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Error al editar el  Producto Manufacturado:", error.message);
+    throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
   }
 }
 export async function deleteProductoXId(id: string, token: string) {

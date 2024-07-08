@@ -12,6 +12,7 @@ import {
   Upload,
   Image,
   notification,
+  message,
 } from "antd";
 import { PlusOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import {
@@ -217,8 +218,8 @@ const FormularioActualizarProducto: React.FC<Props> = ({
         icon: <CheckCircleOutlined style={{ color: "#108ee9" }} />,
       });
       onClose();
-    } catch (error) {
-      console.error("Error al modificar producto:", error);
+    } catch (error: any) {
+      message.error(error.message);
     }
     setIsModalVisible(false);
     onClose();
