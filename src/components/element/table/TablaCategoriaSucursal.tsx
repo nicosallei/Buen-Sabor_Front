@@ -59,7 +59,7 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
         message.success("Categoría desasociada exitosamente");
         // Trigger a refresh of the categories
         setUpdateKey(Date.now());
-        window.location.reload();
+        //window.location.reload();
       } else {
         message.error("Error al desasociar la categoría");
       }

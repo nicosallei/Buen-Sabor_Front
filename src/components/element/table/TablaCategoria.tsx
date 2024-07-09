@@ -98,11 +98,10 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
 
       setUpdateKey(Date.now()); // Fuerza un re-renderizado
       handleCancelEdit();
-    } catch (error) {
-      console.error("Error al editar:", error);
+    } catch (error: any) {
       Modal.error({
         title: "Error al editar",
-        content: `Hubo un problema al intentar editar. Error: ${error}`,
+        content: `Ya existe ese nombre de categoría.`,
       });
     }
   };
@@ -123,14 +122,12 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
         setUpdateKey(Date.now()); // Fuerza un re-renderizado
         console.log("Categoría actualizada:", item.eliminado);
       } else {
-        Modal.error({
-          title: "Error al realizar la operación",
-          content:
-            "Hubo un problema al intentar realizar la operación. Por favor, inténtalo de nuevo más tarde.",
-        });
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al eliminar la categoría");
       }
-    } catch (error) {
-      console.error("Error al realizar la operación:", error);
+    } catch (error: any) {
+      console.error("Error al eliminar:", error.message);
+      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
     }
   };
 
@@ -163,12 +160,12 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
       } else {
         Modal.error({
           title: "Error al agregar subcategoría",
-          content:
-            "Hubo un problema al intentar agregar la subcategoría. Por favor, inténtalo de nuevo más tarde.",
+          content: "Ya existe una categoria con ese nombre",
         });
       }
-    } catch (error) {
-      console.error("Error al agregar subcategoría:", error);
+    } catch (error: any) {
+      console.error("Error al agregar subcategoria:", error.message);
+      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
     }
   };
 
