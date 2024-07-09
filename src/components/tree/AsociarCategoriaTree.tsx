@@ -20,7 +20,7 @@ type CategoryInputProps = {
 };
 
 const AsociarCategoriaTree: React.FC<CategoryInputProps> = ({
-  selectedEmpresa,
+  //selectedEmpresa,
   selectedSucursal,
   availableCategories,
   onCategoryAssociated,

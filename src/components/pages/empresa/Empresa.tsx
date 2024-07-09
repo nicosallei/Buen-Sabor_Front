@@ -19,11 +19,27 @@ const Empresa = () => {
   const [empresas, setEmpresas] = useState<EmpresasInterface[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [reloadTable, setReloadTable] = useState(false);
 
   const navigate = useNavigate();
   const cargarDatosEmpresa = async () => {
     try {
       const response = await getTodasEmpresas();
+      getTodasEmpresas().then((empresas) => {
+        const empresasTransformadas = empresas.map((empresa) => {
+          if (empresa.imagen) {
+            return {
+              ...empresa,
+              imagen: empresa.imagen.replace(
+                "src\\main\\resources\\images\\",
+                "http://localhost:8080/images/"
+              ),
+            };
+          }
+          return empresa;
+        });
+        setEmpresas(empresasTransformadas);
+      });
       setEmpresas(response);
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -34,7 +50,7 @@ const Empresa = () => {
   useEffect(() => {
     cargarDatosEmpresa();
     //getTodasEmpresas().then(setEmpresas);
-  }, []);
+  }, [reloadTable]);
 
   const openEditModal = (empresa: any) => {
     setSelectedEmpresa(empresa);
@@ -114,7 +130,11 @@ const Empresa = () => {
       });
       setEmpresas(empresasTransformadas);
     });
-  }, []);
+  }, [reloadTable]);
+
+  const handleFormSubmit = () => {
+    setReloadTable(!reloadTable); // Cambiar el estado para recargar la tabla
+  };
 
   return (
     <div>
@@ -180,6 +200,7 @@ const Empresa = () => {
           <FormularioModificarEmpresa
             empresa={selectedEmpresa}
             onClose={closeEditModal}
+            onSubmit={handleFormSubmit}
           />
         </Modal>
       )}
