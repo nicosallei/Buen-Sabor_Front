@@ -28,6 +28,26 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
   const [addSubcategoryModalVisible, setAddSubcategoryModalVisible] =
     useState<boolean>(false);
   const [denominacion, setDenominacion] = useState<string>("");
+  const [imagenBase64, setImagenBase64] = useState<string | undefined>(
+    undefined
+  );
+
+  const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          const base64String = (reader.result as string).replace(
+            /^data:image\/\w+;base64,/,
+            ""
+          );
+          setImagenBase64(base64String);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const [selectedParentCategory, setSelectedParentCategory] =
     useState<Category | null>(null);
@@ -147,12 +167,15 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            urlIcono: imagenBase64,
             denominacion: denominacion,
             idCategoriaPadre: selectedParentCategory.id,
             idEmpresaCategoriaPadre: selectedEmpresa,
           }),
         }
       );
+      setImagenBase64(undefined);
+      setDenominacion("");
 
       if (response.ok) {
         setUpdateKey(Date.now());
@@ -252,6 +275,19 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
           placeholder="Ingrese la denominación de la subcategoría"
           onChange={(e) => setDenominacion(e.target.value)}
         />
+        {/* Input para seleccionar la imagen */}
+        <Input
+          type="file"
+          onChange={handleImagenChange}
+          accept="image/*"
+          style={{ marginTop: 20 }}
+        />
+        {/* Vista previa de la imagen */}
+        {imagenBase64 && (
+          <div style={{ marginTop: 20 }}>
+            <img src={imagenBase64} alt="Preview" style={{ maxWidth: 200 }} />
+          </div>
+        )}
       </Modal>
     </div>
   );

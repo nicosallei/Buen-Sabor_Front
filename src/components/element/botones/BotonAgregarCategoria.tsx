@@ -14,6 +14,9 @@ export default function BotonAgregarCategoria({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [selectedSucursales, setSelectedSucursales] = useState<string[]>([]);
+  const [imagenBase64, setImagenBase64] = useState<string | undefined>(
+    undefined
+  );
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -31,18 +34,38 @@ export default function BotonAgregarCategoria({
     }
     setIsModalVisible(false);
   };
+  const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          const base64String = (reader.result as string).replace(
+            /^data:image\/\w+;base64,/,
+            ""
+          );
+          setImagenBase64(base64String);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleCancel = () => {
     setIsModalVisible(false);
     setSelectedSucursales([]);
   };
 
-  const createCategory = async (values: { sucursales: { id: string }[] }) => {
+  const createCategory = async (values: {
+    urlIcono: string | undefined;
+    sucursales: { id: string }[];
+  }) => {
     try {
       // Convertir los IDs de sucursales en objetos con un campo "id"
       const sucursalesObj = selectedSucursales.map((id) => ({ id }));
 
       // Asignar la lista de objetos de sucursales al valor "sucursales"
+      values.urlIcono = imagenBase64;
       values.sucursales = sucursalesObj;
 
       const response = await fetch(
@@ -55,10 +78,11 @@ export default function BotonAgregarCategoria({
           body: JSON.stringify(values),
         }
       );
+      setImagenBase64(undefined);
       if (!response.ok) {
         // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al crear el insumo");
+        throw new Error(errorData.message || "Error al crear la categoria");
       }
       return await response.json();
     } catch (error: any) {
@@ -94,6 +118,15 @@ export default function BotonAgregarCategoria({
           >
             <Input placeholder="Nombre de la categoría" />
           </Form.Item>
+          <Form.Item label="Imagen:" name="imagen">
+            <Input type="file" onChange={handleImagenChange} accept="image/*" />
+          </Form.Item>
+
+          {imagenBase64 && (
+            <div style={{ marginTop: 20 }}>
+              <img src={imagenBase64} alt="Preview" style={{ maxWidth: 200 }} />
+            </div>
+          )}
           <AgregarSucursalACatgoria
             setSelectedSucursales={setSelectedSucursales}
           />
