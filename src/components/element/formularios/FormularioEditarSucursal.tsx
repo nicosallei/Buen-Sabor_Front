@@ -135,6 +135,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
       });
       handleOk();
       cargarDatos();
+      setNuevaImagenBase64(null);
       //window.location.reload();
     } catch (error) {
       console.error("Error updating sucursal:", error);

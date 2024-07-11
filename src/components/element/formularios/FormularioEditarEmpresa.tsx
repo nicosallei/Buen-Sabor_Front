@@ -7,11 +7,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 interface FormularioModificarEmpresaProps {
   empresa: any; // Aquí define la estructura de la empresa que vas a modificar
   onClose: () => void;
+  onSubmit: (values: any) => void;
 }
 
 const FormularioModificarEmpresa: React.FC<FormularioModificarEmpresaProps> = ({
   empresa,
   onClose,
+  onSubmit,
 }) => {
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
@@ -72,8 +74,9 @@ const FormularioModificarEmpresa: React.FC<FormularioModificarEmpresaProps> = ({
     };
     const token = await getAccessTokenSilently();
     await actualizarEmpresa(empresa.id, formData, token);
+    onSubmit(values);
     handleOk();
-    window.location.reload(); // Esto recarga la página, considera si realmente es necesario
+    //window.location.reload(); // Esto recarga la página, considera si realmente es necesario
   };
 
   return (

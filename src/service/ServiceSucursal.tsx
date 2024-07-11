@@ -32,9 +32,7 @@ export interface Domicilio {
   cp?: number;
 }
 export const getSucursalId = async (id: number): Promise<Sucursal[]> => {
-  console.log("----->" + id);
-
-  const endpoint = `http://localhost:8080/api/sucursal/lista-sucursal/${id}`;
+  const endpoint = `http://localhost:8080/api/sucursal/lista-todo-sucursal/${id}`;
   const response = await fetch(endpoint, {
     method: "GET",
     headers: {
@@ -71,6 +69,7 @@ export async function crearSucursal(formData: Sucursal, token: string) {
         nombre: formData.nombre,
         horaApertura: formData.horaApertura,
         horaCierre: formData.horaCierre,
+        imagen: formData.imagen,
         calle: formData.calle,
         cp: formData.cp,
         numero: formData.numero,
@@ -152,6 +151,7 @@ export async function actualizarSucursal(
       mode: "cors",
       body: JSON.stringify({
         id: id,
+        imagen: formData.imagen,
         nombre: formData.nombre,
         horaApertura: formData.horaApertura,
         horaCierre: formData.horaCierre,
@@ -188,7 +188,19 @@ export const getSucursal = async (id: string): Promise<Sucursal[]> => {
   console.log(response);
   return await response.json();
 };
-
+export const getSucursalTodas = async (id: string): Promise<Sucursal[]> => {
+  const endpoint = `http://localhost:8080/api/sucursal/lista-todo-sucursal/${id}`;
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    mode: "cors",
+  });
+  console.log(response);
+  return await response.json();
+};
 export const obtenerSucursalesActivas = async (): Promise<Sucursal[]> => {
   const endpoint = "http://localhost:8080/api/sucursal/traerSucursales/"; // Asegúrate de que la URL sea correcta
   try {

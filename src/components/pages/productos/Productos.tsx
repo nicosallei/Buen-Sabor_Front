@@ -15,6 +15,7 @@ export default function Productos() {
   const [selectedSucursal, setSelectedSucursal] = useState("");
   const [disableSelection, setDisableSelection] = useState(false);
   const [reloadProductos, setReloadProductos] = useState(false);
+  const [reloadTable, setReloadTable] = useState(false);
 
   useEffect(() => {
     const fetchEmpresas = async () => {
@@ -51,6 +52,7 @@ export default function Productos() {
   };
 
   const closeFormularioProducto = () => {
+    setReloadTable(!reloadTable);
     setShowFormularioProducto(false);
   };
 
@@ -135,6 +137,7 @@ export default function Productos() {
             key={reloadProductos ? "reload" : "normal"}
             empresaId={selectedEmpresa}
             sucursalId={selectedSucursal}
+            reload={reloadTable}
             onReload={() => setReloadProductos(true)} // Pasar callback
           />
         ) : (

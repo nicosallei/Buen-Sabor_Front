@@ -19,12 +19,38 @@ const Empresa = () => {
   const [empresas, setEmpresas] = useState<EmpresasInterface[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [reloadTable, setReloadTable] = useState(false);
 
   const navigate = useNavigate();
+  const cargarDatosEmpresa = async () => {
+    try {
+      const response = await getTodasEmpresas();
+      getTodasEmpresas().then((empresas) => {
+        const empresasTransformadas = empresas.map((empresa) => {
+          if (empresa.imagen) {
+            return {
+              ...empresa,
+              imagen: empresa.imagen.replace(
+                "src\\main\\resources\\images\\",
+                "http://localhost:8080/images/"
+              ),
+            };
+          }
+          return empresa;
+        });
+        setEmpresas(empresasTransformadas);
+      });
+      setEmpresas(response);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setEmpresas([]);
+    }
+  };
 
   useEffect(() => {
-    getTodasEmpresas().then(setEmpresas);
-  }, []);
+    cargarDatosEmpresa();
+    //getTodasEmpresas().then(setEmpresas);
+  }, [reloadTable]);
 
   const openEditModal = (empresa: any) => {
     setSelectedEmpresa(empresa);
@@ -104,7 +130,11 @@ const Empresa = () => {
       });
       setEmpresas(empresasTransformadas);
     });
-  }, []);
+  }, [reloadTable]);
+
+  const handleFormSubmit = () => {
+    setReloadTable(!reloadTable); // Cambiar el estado para recargar la tabla
+  };
 
   return (
     <div>
@@ -115,18 +145,23 @@ const Empresa = () => {
             key={empresa.id}
             style={{
               width: 300,
+              height: "100%", // Ajustar el alto según sea necesario
               margin: "10px",
               opacity: empresa.eliminado ? 0.5 : 1,
             }}
             cover={
               <img
                 alt={empresa.nombre}
-                // Aquí se realiza la verificación y se elige la imagen
                 src={empresa.imagen ? empresa.imagen : imagenEmpresa}
                 onClick={() =>
                   empresa.eliminado ? null : navigate(`/sucursal/${empresa.id}`)
                 }
-                style={{ cursor: empresa.eliminado ? "default" : "pointer" }}
+                style={{
+                  cursor: empresa.eliminado ? "default" : "pointer",
+                  width: "100%", // Ajustar al 100% del contenedor
+                  height: "auto", // Mantener la proporción
+                  maxHeight: "200px", // Opcional: limitar la altura máxima
+                }}
               />
             }
             actions={[
@@ -141,7 +176,9 @@ const Empresa = () => {
                 key="edit"
                 onClick={(e) => {
                   e.stopPropagation();
-                  openEditModal(empresa);
+                  if (!empresa.eliminado) {
+                    openEditModal(empresa);
+                  }
                 }}
                 style={{ cursor: empresa.eliminado ? "default" : "pointer" }}
               />,
@@ -150,7 +187,7 @@ const Empresa = () => {
             <Meta title={empresa.nombre} description={empresa.razonSocial} />
           </Card>
         ))}
-        <TarjetaAgregar />
+        <TarjetaAgregar onSucursalAdded={cargarDatosEmpresa} />
       </div>
 
       {selectedEmpresa && (
@@ -163,6 +200,7 @@ const Empresa = () => {
           <FormularioModificarEmpresa
             empresa={selectedEmpresa}
             onClose={closeEditModal}
+            onSubmit={handleFormSubmit}
           />
         </Modal>
       )}

@@ -12,6 +12,7 @@ import {
   Upload,
   UploadFile,
   notification,
+  message,
 } from "antd";
 
 import { PlusOutlined, CheckCircleOutlined } from "@ant-design/icons";
@@ -38,7 +39,7 @@ interface Props {
 const FormularioProducto: React.FC<Props> = ({
   visible,
   onClose,
-
+  onSubmit,
   initialValues,
   sucursalId,
 }) => {
@@ -154,7 +155,7 @@ const FormularioProducto: React.FC<Props> = ({
       formattedValues.imagenes = imagenes;
       const token = await getAccessTokenSilently();
       const response = await crearManufacturado(formattedValues, token);
-      console.log("Response: ", response);
+      onSubmit(response);
       form.resetFields();
       onClose();
       notification.open({
@@ -165,8 +166,8 @@ const FormularioProducto: React.FC<Props> = ({
           </span>
         ),
       });
-    } catch (error) {
-      console.error("Error: ", error);
+    } catch (error: any) {
+      message.error(error.message);
     }
   };
 

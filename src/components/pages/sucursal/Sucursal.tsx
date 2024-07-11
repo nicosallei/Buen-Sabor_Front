@@ -134,6 +134,12 @@ const Sucursal = () => {
     cargarDatosSucursal();
   }, [id]);
 
+  const imageStyle = {
+    width: "100%", // Ajusta el ancho al 100% del contenedor
+    height: "200px", // Altura fija para todas las imágenes
+    objectFit: "cover", // Asegura que la imagen cubra el espacio sin distorsionarse
+  };
+
   return (
     <div>
       <h1>Sucursales</h1>
@@ -159,6 +165,7 @@ const Sucursal = () => {
                             .replace(/\\/g, "/")
                         : imagenSucursal
                     }
+                    style={imageStyle as React.CSSProperties} // Apply the defined style to the image
                     onClick={() => handleCardClick(sucursal)}
                   />
                 }
@@ -188,7 +195,7 @@ const Sucursal = () => {
             </Col>
           ))}
       </Row>
-      <TarjetaAgregar />
+      <TarjetaAgregar onSucursalAdded={cargarDatosSucursal} />
 
       {isModalVisible && currentSucursal && (
         <FormularioEditarSucursal

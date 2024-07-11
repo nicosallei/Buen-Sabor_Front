@@ -28,6 +28,26 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
   const [addSubcategoryModalVisible, setAddSubcategoryModalVisible] =
     useState<boolean>(false);
   const [denominacion, setDenominacion] = useState<string>("");
+  const [imagenBase64, setImagenBase64] = useState<string | undefined>(
+    undefined
+  );
+
+  const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          const base64String = (reader.result as string).replace(
+            /^data:image\/\w+;base64,/,
+            ""
+          );
+          setImagenBase64(base64String);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const [selectedParentCategory, setSelectedParentCategory] =
     useState<Category | null>(null);
@@ -98,11 +118,10 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
 
       setUpdateKey(Date.now()); // Fuerza un re-renderizado
       handleCancelEdit();
-    } catch (error) {
-      console.error("Error al editar:", error);
+    } catch (error: any) {
       Modal.error({
         title: "Error al editar",
-        content: `Hubo un problema al intentar editar. Error: ${error}`,
+        content: `Ya existe ese nombre de categoría.`,
       });
     }
   };
@@ -123,14 +142,12 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
         setUpdateKey(Date.now()); // Fuerza un re-renderizado
         console.log("Categoría actualizada:", item.eliminado);
       } else {
-        Modal.error({
-          title: "Error al realizar la operación",
-          content:
-            "Hubo un problema al intentar realizar la operación. Por favor, inténtalo de nuevo más tarde.",
-        });
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al eliminar la categoría");
       }
-    } catch (error) {
-      console.error("Error al realizar la operación:", error);
+    } catch (error: any) {
+      console.error("Error al eliminar:", error.message);
+      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
     }
   };
 
@@ -150,12 +167,15 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            urlIcono: imagenBase64,
             denominacion: denominacion,
             idCategoriaPadre: selectedParentCategory.id,
             idEmpresaCategoriaPadre: selectedEmpresa,
           }),
         }
       );
+      setImagenBase64(undefined);
+      setDenominacion("");
 
       if (response.ok) {
         setUpdateKey(Date.now());
@@ -163,12 +183,12 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
       } else {
         Modal.error({
           title: "Error al agregar subcategoría",
-          content:
-            "Hubo un problema al intentar agregar la subcategoría. Por favor, inténtalo de nuevo más tarde.",
+          content: "Ya existe una categoria con ese nombre",
         });
       }
-    } catch (error) {
-      console.error("Error al agregar subcategoría:", error);
+    } catch (error: any) {
+      console.error("Error al agregar subcategoria:", error.message);
+      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
     }
   };
 
@@ -255,6 +275,19 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
           placeholder="Ingrese la denominación de la subcategoría"
           onChange={(e) => setDenominacion(e.target.value)}
         />
+        {/* Input para seleccionar la imagen */}
+        <Input
+          type="file"
+          onChange={handleImagenChange}
+          accept="image/*"
+          style={{ marginTop: 20 }}
+        />
+        {/* Vista previa de la imagen */}
+        {imagenBase64 && (
+          <div style={{ marginTop: 20 }}>
+            <img src={imagenBase64} alt="Preview" style={{ maxWidth: 200 }} />
+          </div>
+        )}
       </Modal>
     </div>
   );

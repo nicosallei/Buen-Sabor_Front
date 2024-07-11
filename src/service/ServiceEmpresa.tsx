@@ -57,6 +57,7 @@ export async function crearEmpresa(formData: Empresas, token: string) {
         nombre: formData.nombre,
         razonSocial: formData.razonSocial,
         cuil: formData.cuil,
+        imagen: formData.imagen,
       }),
     });
 

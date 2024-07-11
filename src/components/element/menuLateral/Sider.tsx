@@ -51,7 +51,7 @@ const allItems: MenuItem[] = [
     // getItem("/roles", "ROLES", "8"),
   ]),
   getItem("/insumos", "INSUMOS", "9", <FileOutlined />),
-  // getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
+  getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
   getItem(
     "/unidadMedida",
     "Unidad de Medida",

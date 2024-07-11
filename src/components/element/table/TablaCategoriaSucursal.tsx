@@ -24,12 +24,16 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
   selectedSucursal,
 }) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>(
+    []
+  );
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [updateKey, setUpdateKey] = useState<number>(Date.now());
 
   useEffect(() => {
     if (selectedEmpresa !== null && selectedSucursal !== null) {
       fetchCategories();
+      fetchAvailableCategories();
     }
   }, [selectedEmpresa, selectedSucursal, updateKey]);
 
@@ -48,6 +52,21 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
     }
   };
 
+  const fetchAvailableCategories = async () => {
+    try {
+      if (!selectedEmpresa || !selectedSucursal) return;
+
+      const url = `http://localhost:8080/api/local/traerCategoriasNoAsociadasASucursal/${selectedSucursal}/${selectedEmpresa}`;
+      const response = await fetch(url);
+      const data: Category[] = await response.json();
+
+      const sortedData = data.sort((a, b) => a.id - b.id);
+      setAvailableCategories(sortedData);
+    } catch (error) {
+      console.error("Error al obtener las categorías no asociadas:", error);
+    }
+  };
+
   const handleDelete = async (categoriaId: number) => {
     if (!selectedSucursal) return;
 
@@ -59,7 +78,6 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
         message.success("Categoría desasociada exitosamente");
         // Trigger a refresh of the categories
         setUpdateKey(Date.now());
-        window.location.reload();
       } else {
         message.error("Error al desasociar la categoría");
       }
@@ -107,6 +125,7 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
     ));
 
   const showModal = () => {
+    fetchAvailableCategories(); // Ensure available categories are fetched before showing the modal
     setIsModalVisible(true);
   };
 
@@ -117,6 +136,11 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
 
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  const handleCategoryAssociation = () => {
+    fetchAvailableCategories();
+    setUpdateKey(Date.now());
   };
 
   return (
@@ -138,6 +162,8 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
         <AsociarCategoriaTree
           selectedEmpresa={selectedEmpresa}
           selectedSucursal={selectedSucursal}
+          availableCategories={availableCategories} // Pass available categories as props
+          onCategoryAssociated={handleCategoryAssociation} // Pass callback function as prop
         />
       </Modal>
     </div>
