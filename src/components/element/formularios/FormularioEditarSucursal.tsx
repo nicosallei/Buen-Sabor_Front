@@ -341,13 +341,6 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
                 style={{ maxWidth: "100%", marginBottom: 10 }}
               />
             )}
-            {!nuevaImagenBase64 && form.getFieldValue("imagen") && (
-              <img
-                src={`data:image/jpeg;base64,${form.getFieldValue("imagen")}`}
-                alt="Imagen de la promoción"
-                style={{ maxWidth: "100%", marginBottom: 10 }}
-              />
-            )}
           </Form.Item>
           <Form.Item label="Cargar Nueva Imagen:">
             <input
