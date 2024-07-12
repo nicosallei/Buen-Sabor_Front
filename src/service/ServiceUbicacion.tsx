@@ -107,3 +107,23 @@ export const getLocalidadPorId = async (id: number): Promise<any> => {
   }
   return await response.json();
 };
+
+export const getLocalidadesByProvincia = async (
+  provinciaId: number
+): Promise<Localidad[]> => {
+  const response = await fetch(
+    `http://localhost:8080/api/localidad/provincia/${provinciaId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      mode: "cors",
+    }
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return await response.json();
+};

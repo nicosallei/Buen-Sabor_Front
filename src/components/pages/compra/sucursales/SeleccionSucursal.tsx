@@ -44,8 +44,12 @@ const SeleccionSucursal = () => {
           >
             <img
               src={
-                sucursal.imagen ||
-                "http://localhost:8080/images/sin-imagen-sucursal.png"
+                sucursal.imagen
+                  ? sucursal.imagen.replace(
+                      "src\\main\\resources\\images\\",
+                      "http://localhost:8080/images/"
+                    )
+                  : "http://localhost:8080/images/sin-imagen-sucursal.png"
               }
               alt={`Sucursal ${sucursal.nombre}`}
               style={{ width: "100%", height: "auto" }}

@@ -81,7 +81,10 @@ const CompraCategoria = () => {
               cover={
                 <img
                   alt="example"
-                  src={`http://localhost:8080/images/${categoria.urlIcono}`}
+                  src={`http://localhost:8080/images/${categoria.urlIcono.replace(
+                    "src\\main\\resources\\images\\",
+                    ""
+                  )}`}
                   onError={(e) => {
                     e.currentTarget.src =
                       "http://localhost:8080/images/sin-imagen-categoria.jpeg"; // Ruta de la imagen por defecto

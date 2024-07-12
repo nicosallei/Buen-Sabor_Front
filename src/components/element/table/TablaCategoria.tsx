@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Input, Modal, Tree, Switch } from "antd";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import sinImagen from "../../../assets/sin-imagen.jpg";
 
 const { TreeNode } = Tree;
 
@@ -11,6 +12,7 @@ type Category = {
   subCategoriaDtos?: Category[];
   subSubCategoriaDtos?: Category[];
   sucursalId?: string;
+  urlIcono?: string;
 };
 
 type CategoryInputProps = {
@@ -99,7 +101,10 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: editCategoryName, // Enviar como JSON
+        body: JSON.stringify({
+          urlIcono: imagenBase64,
+          denominacion: editCategoryName,
+        }),
       });
 
       if (!response.ok) {
@@ -198,52 +203,68 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
   };
 
   const renderTreeNodes = (data: Category[]): React.ReactNode =>
-    data.map((item) => (
-      <TreeNode
-        title={
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span
-              style={{
-                textDecoration: item.eliminado ? "line-through" : "none",
-              }}
-            >
-              {item.denominacion}
-            </span>
-            <Switch
-              checked={!item.eliminado}
-              onChange={() => handleSwitchChange(item)}
-              style={{
-                marginLeft: 10,
-                backgroundColor: item.eliminado ? "red" : "green",
-              }}
-            />
-            <Button
-              onClick={() => handleEditCategory(item)}
-              type="primary"
-              icon={<EditOutlined />}
-              disabled={item.eliminado}
-              style={{ marginLeft: 10 }}
-            />
-            <Button
-              onClick={() => openAddSubcategoryModal(item)}
-              type="primary"
-              icon={<PlusOutlined />}
-              disabled={item.eliminado}
-              style={{ marginLeft: 10 }}
-            />
-          </div>
-        }
-        key={item.id}
-        style={{ color: item.eliminado ? "gray" : "inherit" }}
-      >
-        {item.subCategoriaDtos &&
-          item.subCategoriaDtos.length > 0 &&
-          renderTreeNodes(item.subCategoriaDtos)}
-        {item.subSubCategoriaDtos &&
-          item.subSubCategoriaDtos.length > 0 &&
-          renderTreeNodes(item.subSubCategoriaDtos)}
-      </TreeNode>
-    ));
+    data.map((item) => {
+      // Reemplazar la parte de la ruta de la imagen
+      const imageUrl = item.urlIcono
+        ? item.urlIcono.replace(
+            "src\\main\\resources\\images\\",
+            "http://localhost:8080/images/"
+          )
+        : sinImagen;
+
+      return (
+        <TreeNode
+          title={
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {/* Usar imageUrl para el src del <img> */}
+              <img
+                src={imageUrl}
+                alt="Icono"
+                style={{ width: 20, height: 20, marginRight: 10 }}
+              />
+              <span
+                style={{
+                  textDecoration: item.eliminado ? "line-through" : "none",
+                }}
+              >
+                {item.denominacion}
+              </span>
+              <Switch
+                checked={!item.eliminado}
+                onChange={() => handleSwitchChange(item)}
+                style={{
+                  marginLeft: 10,
+                  backgroundColor: item.eliminado ? "red" : "green",
+                }}
+              />
+              <Button
+                onClick={() => handleEditCategory(item)}
+                type="primary"
+                icon={<EditOutlined />}
+                disabled={item.eliminado}
+                style={{ marginLeft: 10 }}
+              />
+              <Button
+                onClick={() => openAddSubcategoryModal(item)}
+                type="primary"
+                icon={<PlusOutlined />}
+                disabled={item.eliminado}
+                style={{ marginLeft: 10 }}
+              />
+            </div>
+          }
+          key={item.id}
+          style={{ color: item.eliminado ? "gray" : "inherit" }}
+        >
+          {item.subCategoriaDtos &&
+            item.subCategoriaDtos.length > 0 &&
+            renderTreeNodes(item.subCategoriaDtos)}
+          {item.subSubCategoriaDtos &&
+            item.subSubCategoriaDtos.length > 0 &&
+            renderTreeNodes(item.subSubCategoriaDtos)}
+        </TreeNode>
+      );
+    });
 
   return (
     <div>
@@ -259,6 +280,20 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
             value={editCategoryName}
             onChange={(e) => setEditCategoryName(e.target.value)}
           />
+
+          {/* Input para seleccionar la imagen */}
+          <Input
+            type="file"
+            onChange={handleImagenChange}
+            accept="image/*"
+            style={{ marginTop: 20 }}
+          />
+          {/* Vista previa de la imagen */}
+          {imagenBase64 && (
+            <div style={{ marginTop: 20 }}>
+              <img src={imagenBase64} alt="Preview" style={{ maxWidth: 200 }} />
+            </div>
+          )}
         </Modal>
       )}
       <Modal

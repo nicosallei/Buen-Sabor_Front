@@ -73,7 +73,7 @@ const CompraProductos = () => {
           {productos.map((producto) => (
             <Card
               key={producto.id}
-              style={{ width: 300 }}
+              style={{ width: 300, overflow: "hidden" }} // Asegura que el contenido no desborde el tamaño de la tarjeta
               cover={
                 <img
                   alt={producto.denominacion}
@@ -83,6 +83,11 @@ const CompraProductos = () => {
                         producto.imagenes[0].url
                       : "http://localhost:8080/images/sin-imagen.jpg"
                   }
+                  style={{
+                    width: "100%", // Hace que la imagen ocupe todo el ancho de la tarjeta
+                    height: "200px", // Altura fija para todas las imágenes
+                    objectFit: "cover", // Asegura que la imagen cubra el espacio disponible, recortándose si es necesario
+                  }}
                 />
               }
             >

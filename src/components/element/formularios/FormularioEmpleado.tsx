@@ -7,7 +7,7 @@ import {
   notification,
   DatePicker,
 } from "antd";
-import moment from "moment";
+//import moment from "moment";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { RolEmpleado } from "../../../types/usuario/Usuario";
@@ -160,16 +160,16 @@ const FormularioEmpleado: React.FC<Props> = ({
                 required: true,
                 message: "Por favor selecciona tu fecha de nacimiento",
               },
-              () => ({
-                validator(_, value) {
-                  if (!value || moment().diff(moment(value), "years") >= 18) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error("Debes tener al menos 18 años")
-                  );
-                },
-              }),
+              // () => ({
+              //   validator(_, value) {
+              //     if (!value || moment().diff(moment(value), "years") >= 18) {
+              //       return Promise.resolve();
+              //     }
+              //     return Promise.reject(
+              //       new Error("Debes tener al menos 18 años")
+              //     );
+              //   },
+              // }),
             ]}
           >
             <DatePicker />
