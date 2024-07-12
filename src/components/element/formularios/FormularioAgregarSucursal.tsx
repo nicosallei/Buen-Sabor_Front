@@ -13,9 +13,9 @@ import {
 import { useParams } from "react-router-dom";
 import { Sucursal, crearSucursal } from "../../../service/ServiceSucursal";
 import {
-  getLocalidad,
   getPais,
   getProvincia,
+  getLocalidadesByProvincia,
 } from "../../../service/ServiceUbicacion";
 
 import { Pais, Provincia, Localidad } from "../../../service/ServiceUbicacion";
@@ -41,12 +41,40 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
   const [paises, setPaises] = useState<Pais[]>([]);
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [localidades, setLocalidades] = useState<Localidad[]>([]);
+  const [selectedPais, setSelectedPais] = useState<number | null>(null);
+  const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
+    null
+  );
   const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
     getPais().then((data: Pais[]) => setPaises(data));
-    getProvincia().then((data: Provincia[]) => setProvincias(data));
-    getLocalidad().then((data: Localidad[]) => setLocalidades(data));
   }, []);
+
+  useEffect(() => {
+    if (selectedPais) {
+      getProvincia().then((data: Provincia[]) => {
+        const provinciasFiltradas = data.filter(
+          (provincia) => provincia.pais.id === String(selectedPais)
+        );
+        setProvincias(provinciasFiltradas);
+      });
+    } else {
+      setProvincias([]);
+    }
+    setSelectedProvincia(null);
+    setLocalidades([]);
+  }, [selectedPais]);
+
+  useEffect(() => {
+    if (selectedProvincia) {
+      getLocalidadesByProvincia(selectedProvincia).then((data: Localidad[]) =>
+        setLocalidades(data)
+      );
+    } else {
+      setLocalidades([]);
+    }
+  }, [selectedProvincia]);
 
   const handleOk = () => {
     setIsModalVisible(false);
@@ -57,6 +85,7 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
     setIsModalVisible(false);
     onClose();
   };
+
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -73,6 +102,17 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
       reader.readAsDataURL(file);
     }
   };
+
+  const handlePaisChange = (paisId: number) => {
+    setSelectedPais(paisId);
+    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
+  };
+
+  const handleProvinciaChange = (provinciaId: number) => {
+    setSelectedProvincia(provinciaId);
+    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
+  };
+
   const handleSubmit = async (values: any) => {
     console.log("Form submitted with values:", values); // Add log to check form values
     try {
@@ -111,14 +151,14 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
       });
     }
   };
+
   const cargarDatos = async () => {
     const paisesData = await getPais();
     setPaises(paisesData);
     const provinciasData = await getProvincia();
     setProvincias(provinciasData);
-    const localidadesData = await getLocalidad();
-    setLocalidades(localidadesData);
   };
+
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -199,6 +239,7 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
                     .toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }
+                onChange={handlePaisChange}
               >
                 {paises.map((pais) => (
                   <Option key={pais.id} value={String(pais.id)}>
@@ -218,10 +259,12 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
             >
               <Select
                 showSearch
+                disabled={!selectedPais}
                 filterOption={(input, option: any) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0
                 }
+                onChange={handleProvinciaChange}
               >
                 {provincias.map((provincia) => (
                   <Option key={provincia.id} value={String(provincia.id)}>
@@ -243,6 +286,7 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
             >
               <Select
                 showSearch
+                disabled={!selectedProvincia}
                 filterOption={(input, option: any) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0
@@ -304,7 +348,6 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
                 accept="image/*"
               />
             </Form.Item>
-
             {imagenBase64 && (
               <div style={{ marginTop: 20 }}>
                 <img
