@@ -58,7 +58,7 @@ const LoginHandler: React.FC = () => {
                 token
               );
               localStorage.setItem("selectedSucursalNombre", sucursal.nombre);
-              navigate("/unidadMedida");
+              navigate("/insumos");
             }
           } else {
             throw new Error("Empleado no encontrado");
