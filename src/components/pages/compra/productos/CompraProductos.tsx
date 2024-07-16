@@ -42,7 +42,6 @@ const CompraProductos = () => {
 
   const agregarAlCarrito = (producto: Producto) => {
     // Verifica si ya se ha realizado un pedido
-    console.log("-------estoy en agregar al carrito--->" + pedidoRealizado);
     if (pedidoRealizado) {
       toast.warning(
         "No puedes agregar más productos después de realizar un pedido."

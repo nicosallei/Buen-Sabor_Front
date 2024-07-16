@@ -48,6 +48,20 @@ const Carrito = () => {
   };
 
   const incrementar = (productoId: number) => {
+    const producto = carrito.find((item) => item.id === productoId)?.producto;
+    if (!producto) return;
+
+    const { cantidadMaximaCompra } = producto;
+
+    // Verifica si la cantidad actual más 1 supera la cantidad máxima permitida
+    const foundItem = carrito.find((item) => item.id === productoId);
+    if (foundItem && foundItem.cantidad + 1 > (cantidadMaximaCompra ?? 0)) {
+      toast.warning(
+        `No puedes agregar más de ${cantidadMaximaCompra} unidades de ${producto.denominacion}.`
+      );
+      return;
+    }
+
     dispatch(incrementarCantidad({ id: productoId }));
   };
 

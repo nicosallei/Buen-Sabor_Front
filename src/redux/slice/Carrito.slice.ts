@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   ClienteDto,
   DomicilioDto,
@@ -15,6 +14,7 @@ interface PedidoDetalleAddState {
   producto: Producto;
   cantidad: number;
 }
+
 interface PedidoDetalleRemoveState {
   id: number;
 }
@@ -40,10 +40,7 @@ export const enviarPedidoDomicilio = createAsyncThunk(
     const state = getState() as { cartReducer: PedidoDetalleAddState[] };
     const pedidoDetalle = state.cartReducer;
 
-    // Verifica si direccionEnvio es null y maneja el caso
     if (!direccionEnvio) {
-      // Manejar el caso en que direccionEnvio es null
-      // Por ejemplo, podrías lanzar un error o manejarlo de otra manera
       throw new Error("La dirección de envío es requerida.");
     }
     if (!cliente) {
@@ -75,12 +72,10 @@ export const enviarPedidoDomicilio = createAsyncThunk(
       },
       pedidoDetalle,
     };
+
     const data = await realizarPedido(pedido);
     if (data) {
       const preferenceMP = await createPreferenceMP(data);
-      console.log("preferenciaMp:", preferenceMP);
-
-      // Devuelve el preferenceId
       return preferenceMP.id;
     } else {
       console.error("Error al realizar el pedido");
@@ -107,7 +102,6 @@ export const enviarPedido = createAsyncThunk(
     }
 
     const pedido: Pedido = {
-      // Aquí puedes agregar cualquier otra propiedad que necesites en tu pedido
       fechaPedido: new Date().toISOString(),
       total: pedidoDetalle.reduce(
         (sum, item) => sum + item.producto.precioVenta * item.cantidad,
@@ -125,8 +119,6 @@ export const enviarPedido = createAsyncThunk(
     if (data) {
       if (formaPago === FormaPago.MERCADOPAGO) {
         const preferenceMP = await createPreferenceMP(data);
-
-        // Devuelve el preferenceId
         return preferenceMP.id;
       } else {
         return data;
@@ -146,11 +138,24 @@ export const carritoSlice = createSlice({
       const productoExistente = state.find((item) => item.id === id);
 
       if (productoExistente) {
-        // Si el producto ya existe en el carrito, aumenta su cantidad
-        productoExistente.cantidad += cantidad;
+        const cantidadMaxima = productoExistente.producto.cantidadMaximaCompra;
+        const nuevaCantidad = productoExistente.cantidad + cantidad;
+
+        if (cantidadMaxima && nuevaCantidad <= cantidadMaxima) {
+          productoExistente.cantidad = nuevaCantidad;
+        } else {
+          console.error(
+            `No se puede agregar más de ${cantidadMaxima} unidades del producto ${productoExistente.producto.denominacion}.`
+          );
+        }
       } else {
-        // Si el producto no existe en el carrito, lo agrega
-        state.push(action.payload);
+        if (cantidad <= (action.payload.producto.cantidadMaximaCompra ?? 0)) {
+          state.push(action.payload);
+        } else {
+          console.error(
+            `No se puede agregar más de ${action.payload.producto.cantidadMaximaCompra} unidades del producto ${action.payload.producto.denominacion}.`
+          );
+        }
       }
     },
     removeToCarrito: (
