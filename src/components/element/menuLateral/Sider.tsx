@@ -2,11 +2,13 @@ import {
   SettingOutlined,
   LogoutOutlined,
   BankOutlined,
-  FileOutlined,
-  DollarCircleOutlined,
   ShoppingCartOutlined,
   FundProjectionScreenOutlined,
   UserOutlined,
+  TeamOutlined,
+  GoldOutlined,
+  InboxOutlined,
+  FireOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
@@ -40,30 +42,26 @@ function getItem(
 
 const allItems: MenuItem[] = [
   getItem("/empresas", "EMPRESA", "2", <BankOutlined />),
+  getItem("/graficos", "GRAFICO", "13", <FundProjectionScreenOutlined />),
   // getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
   getItem("/productos", "PRODUCTOS", "sub1", <ShoppingCartOutlined />, [
     getItem("/productos", "LISTA DE PRODUCTOS", "4"),
     getItem("/categorias", "CATEGORIAS", "5"),
   ]),
-  getItem("/promociones", "PROMOCIONES", "6", <DollarCircleOutlined />),
-  getItem("/empleados", "EMPLEADOS", "sub2", <ShoppingCartOutlined />, [
+  getItem("/promociones", "PROMOCIONES", "6", <FireOutlined />),
+  getItem("/empleados", "EMPLEADOS", "sub2", <TeamOutlined />, [
     getItem("/empleados", "LISTA DE EMPLEADOS", "7"),
     // getItem("/roles", "ROLES", "8"),
   ]),
-  getItem("/insumos", "INSUMOS", "9", <FileOutlined />),
-  getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
-  getItem(
-    "/unidadMedida",
-    "Unidad de Medida",
-    "11",
-    <FundProjectionScreenOutlined />
-  ),
-  getItem(
-    "/estadistica",
-    "ESTADISTICA",
-    "12",
-    <FundProjectionScreenOutlined />
-  ),
+  getItem("/insumos", "INSUMOS", "9", <InboxOutlined />),
+  // getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
+  getItem("/unidadMedida", "Unidad de Medida", "11", <GoldOutlined />),
+  // getItem(
+  //   "/estadistica",
+  //   "ESTADISTICA",
+  //   "12",
+  //   <FundProjectionScreenOutlined />
+  // ),
 ];
 
 const App: React.FC = () => {
@@ -100,7 +98,9 @@ const App: React.FC = () => {
           item?.key === "12" ||
           item?.key === "10" ||
           item?.key === "sub2" ||
-          item?.key === "8"
+          item?.key === "8" ||
+          item?.key === "13" ||
+          item?.key === "11"
         ) {
           return null;
         }

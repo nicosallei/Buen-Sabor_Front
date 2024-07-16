@@ -24,6 +24,7 @@ import ErrorPage from "../components/User/ErrorPage";
 import CallbackPage from "../components/auth0/CallbackPage";
 import LoginHandler from "../components/ui/LoginHandler";
 import EmpleadoProfileCard from "../components/pages/perfil/EmpleadoProfileCard";
+import Graficos from "../components/pages/estadistica/Graficos";
 
 const Rutas: React.FC = () => {
   return (
@@ -97,6 +98,7 @@ const Rutas: React.FC = () => {
         element={<AuthenticationGuard component={LoginHandler} />}
       />
       <Route path="/perfil" element={<EmpleadoProfileCard />} />
+      <Route path="/graficos" element={<Graficos />} />
     </Routes>
   );
 };
