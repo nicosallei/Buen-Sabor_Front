@@ -99,7 +99,8 @@ const App: React.FC = () => {
           item?.key === "10" ||
           item?.key === "sub2" ||
           item?.key === "8" ||
-          item?.key === "13"
+          item?.key === "13" ||
+          item?.key === "11"
         ) {
           return null;
         }
