@@ -173,16 +173,30 @@ const Carrito = () => {
             ? "http://localhost:8080/images/" + item.producto.imagenes[0].url
             : imagenPorDefecto;
         return (
-          <Card key={item.id} style={{ width: 300, marginBottom: "20px" }}>
+          <Card key={item.id} style={{ width: 330, marginBottom: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Card.Meta
                 avatar={<Avatar src={imagenAMostrar} />}
-                title={item.producto.denominacion}
+                title={
+                  <div
+                    style={{
+                      maxWidth: "250px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {item.producto.denominacion}
+                  </div>
+                }
                 description={
                   <>
+                    Precio: ${item.producto.precioVenta}
+                    <br />
                     Cantidad:
                     <InputNumber
                       min={1}
+                      max={item.producto.cantidadMaximaCompra}
                       value={item.cantidad}
                       onChange={(value) =>
                         cambiarCantidadProducto(item.id, value ?? 0)
@@ -194,7 +208,6 @@ const Carrito = () => {
                   </>
                 }
               />
-              <p>Precio: ${item.producto.precioVenta}</p>
             </div>
             {!pedidoRealizado && (
               <div style={{ display: "flex", justifyContent: "space-between" }}>
