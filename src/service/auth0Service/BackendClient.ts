@@ -24,7 +24,7 @@ export default abstract class BackendClient<
         response.status === 204 ||
         response.headers.get("Content-Length") === "0"
       ) {
-        return undefined;
+        //return undefined;
       }
 
       return response.json();
