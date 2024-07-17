@@ -89,8 +89,18 @@ const Carrito = () => {
     }
     try {
       let resultAction;
+      const rol = localStorage.getItem("rol");
+      let clienteId = 1; // ID por defecto
+
+      if (rol === "CLIENTE") {
+        const idAlmacenado = localStorage.getItem("clienteId");
+        if (idAlmacenado) {
+          clienteId = parseInt(idAlmacenado, 10); // Asegúrate de convertir el ID a número
+        }
+      }
+
       const ClienteDto: ClienteDto = {
-        id: 1,
+        id: clienteId,
       };
       if (metodoEntrega === TipoEnvio.DELIVERY) {
         resultAction = await dispatch(

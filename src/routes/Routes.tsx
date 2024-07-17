@@ -25,44 +25,83 @@ import CallbackPage from "../components/auth0/CallbackPage";
 import LoginHandler from "../components/ui/LoginHandler";
 import EmpleadoProfileCard from "../components/pages/perfil/EmpleadoProfileCard";
 import Graficos from "../components/pages/estadistica/Graficos";
+import withRoleCheck from "../controlAcceso/withRoleCheck";
 
 const Rutas: React.FC = () => {
   return (
     <Routes>
       <Route
         path="/empresas"
-        element={<AuthenticationGuard component={Empresa} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Empresa, ["ADMINISTRADOR"])}
+          />
+        }
       />
       <Route
         path="/sucursal/:id"
-        element={<AuthenticationGuard component={Sucursal} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Sucursal, ["ADMINISTRADOR"])}
+          />
+        }
       />
       <Route
         path="/categorias"
-        element={<AuthenticationGuard component={Categorias} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Categorias, ["ADMINISTRADOR"])}
+          />
+        }
       />
 
       <Route
         path="/empleados"
-        element={<AuthenticationGuard component={Empleados} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Empleados, ["ADMINISTRADOR"])}
+          />
+        }
       />
 
       <Route
         path="/categorias/porSucursal"
-        element={<AuthenticationGuard component={CategoriasPorSucursal} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(CategoriasPorSucursal, ["ADMINISTRADOR"])}
+          />
+        }
       />
 
       <Route
         path="/productos"
-        element={<AuthenticationGuard component={Productos} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Productos, [
+              "ADMINISTRADOR",
+              "EMPLEADO_COCINA",
+            ])}
+          />
+        }
       />
       <Route
         path="/insumos"
-        element={<AuthenticationGuard component={Insumo} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Insumo, [
+              "ADMINISTRADOR",
+              "EMPLEADO_COCINA",
+            ])}
+          />
+        }
       />
       <Route
         path="/unidadMedida"
-        element={<AuthenticationGuard component={UnidadMedida} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(UnidadMedida, ["ADMINISTRADOR"])}
+          />
+        }
       />
       <Route
         path="/compra"
@@ -78,11 +117,25 @@ const Rutas: React.FC = () => {
       />
       <Route
         path="/estadistica"
-        element={<AuthenticationGuard component={Estadistica} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Estadistica, [
+              "ADMINISTRADOR",
+              "EMPLEADO_COCINA",
+            ])}
+          />
+        }
       />
       <Route
         path="/promociones"
-        element={<AuthenticationGuard component={Promocion} />}
+        element={
+          <AuthenticationGuard
+            component={withRoleCheck(Promocion, [
+              "ADMINISTRADOR",
+              "EMPLEADO_COCINA",
+            ])}
+          />
+        }
       />
       <Route
         path="/Pedidos"
@@ -93,12 +146,18 @@ const Rutas: React.FC = () => {
       <Route path="/callback" element={<CallbackPage />} />
       <Route path="/registro-cliente" element={<RegistroCliente />} />
       <Route path="/registro/empleado" element={<RegistroEmpleado />} />
-      <Route
+      {/* <Route
         path="/"
         element={<AuthenticationGuard component={LoginHandler} />}
-      />
+      /> */}
+      <Route path="/" element={<LoginHandler />} />
       <Route path="/perfil" element={<EmpleadoProfileCard />} />
-      <Route path="/graficos" element={<Graficos />} />
+      <Route
+        path="/graficos"
+        element={React.createElement(
+          withRoleCheck(Graficos, ["ADMINISTRADOR"])
+        )}
+      />
     </Routes>
   );
 };

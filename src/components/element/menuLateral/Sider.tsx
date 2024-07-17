@@ -17,7 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { MenuInfo } from "rc-menu/lib/interface";
 import Rutas from "../../../routes/Routes";
 import { useAuth0 } from "@auth0/auth0-react";
-import { RolEmpleado } from "../../../types/usuario/Usuario";
+import { Rol, RolEmpleado } from "../../../types/usuario/Usuario";
 
 const { Header, Content, Sider } = Layout;
 
@@ -54,7 +54,7 @@ const allItems: MenuItem[] = [
     // getItem("/roles", "ROLES", "8"),
   ]),
   getItem("/insumos", "INSUMOS", "9", <InboxOutlined />),
-  getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
+  //getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
   getItem("/unidadMedida", "Unidad de Medida", "11", <GoldOutlined />),
   // getItem(
   //   "/estadistica",
@@ -82,12 +82,13 @@ const App: React.FC = () => {
 
   let rol = localStorage.getItem("rol");
   if (!rol) {
-    rol = RolEmpleado.EMPLEADO_COCINA;
+    rol = Rol.CLIENTE;
     localStorage.setItem("rol", rol);
   }
   const isAdmin = rol === RolEmpleado.ADMINISTRADOR;
   const isCocinero = rol === RolEmpleado.EMPLEADO_COCINA;
   const isVisor = rol === RolEmpleado.EMPLEADO_REPARTIDOR;
+  const isCliente = rol === Rol.CLIENTE;
 
   const visibleItems = allItems
     .map((item) => {
@@ -112,6 +113,26 @@ const App: React.FC = () => {
         }
       }
       if (isVisor) {
+      }
+      if (isCliente) {
+        if (
+          item?.key === "2" ||
+          item?.key === "12" ||
+          item?.key === "sub2" ||
+          item?.key === "8" ||
+          item?.key === "13" ||
+          item?.key === "11" ||
+          item?.key === "9" ||
+          item?.key === "8" ||
+          item?.key === "7" ||
+          item?.key === "6" ||
+          item?.key === "5" ||
+          item?.key === "4" ||
+          item?.key === "sub1" ||
+          item?.key === "3"
+        ) {
+          return null;
+        }
       }
       return item;
     })

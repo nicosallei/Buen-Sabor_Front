@@ -64,7 +64,7 @@ function Login() {
       usuarioActualizado.rol = newUsuario.rol;
       setUsuario(usuarioActualizado);
       localStorage.setItem("usuario", JSON.stringify(newUsuario));
-      navigate("/menu", {
+      navigate("/compra", {
         replace: true,
         state: {
           logged: true,
