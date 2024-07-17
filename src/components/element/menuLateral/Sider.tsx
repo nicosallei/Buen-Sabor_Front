@@ -87,7 +87,7 @@ const App: React.FC = () => {
   }
   const isAdmin = rol === RolEmpleado.ADMINISTRADOR;
   const isCocinero = rol === RolEmpleado.EMPLEADO_COCINA;
-  const isVisor = rol === RolEmpleado.EMPLEADO_REPARTIDOR;
+  const isRepartidor = rol === RolEmpleado.EMPLEADO_REPARTIDOR;
   const isCliente = rol === Rol.CLIENTE;
 
   const visibleItems = allItems
@@ -112,7 +112,7 @@ const App: React.FC = () => {
           return { ...item, children: filteredChildren };
         }
       }
-      if (isVisor) {
+      if (isRepartidor) {
       }
       if (isCliente) {
         if (
