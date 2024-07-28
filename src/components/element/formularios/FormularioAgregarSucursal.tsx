@@ -20,6 +20,7 @@ import {
 
 import { Pais, Provincia, Localidad } from "../../../service/ServiceUbicacion";
 import { useAuth0 } from "@auth0/auth0-react";
+
 const { Option } = Select;
 
 interface FormularioAgregarEmpresaProps {
@@ -55,7 +56,9 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
     if (selectedPais) {
       getProvincia().then((data: Provincia[]) => {
         const provinciasFiltradas = data.filter(
-          (provincia) => provincia.pais.id === String(selectedPais)
+          (provincia) =>
+            provincia.pais.id ===
+            (selectedPais ? Number(selectedPais) : undefined)
         );
         setProvincias(provinciasFiltradas);
       });
@@ -65,6 +68,30 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
     setSelectedProvincia(null);
     setLocalidades([]);
   }, [selectedPais]);
+
+  useEffect(() => {
+    if (selectedProvincia) {
+      getLocalidadesByProvincia(selectedProvincia).then((data: Localidad[]) =>
+        setLocalidades(data)
+      );
+    } else {
+      setLocalidades([]);
+    }
+  }, [selectedProvincia]);
+
+  const handlePaisChange = (paisId: number) => {
+    setSelectedPais(paisId);
+    form.setFieldsValue({ provincia: undefined, localidad: undefined });
+  };
+
+  const handleProvinciaChange = (provinciaId: number) => {
+    setSelectedProvincia(provinciaId);
+    form.setFieldsValue({ localidad: undefined });
+  };
+
+  useEffect(() => {
+    cargarDatos();
+  }, []);
 
   useEffect(() => {
     if (selectedProvincia) {
@@ -103,18 +130,8 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
     }
   };
 
-  const handlePaisChange = (paisId: number) => {
-    setSelectedPais(paisId);
-    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
-  };
-
-  const handleProvinciaChange = (provinciaId: number) => {
-    setSelectedProvincia(provinciaId);
-    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
-  };
-
   const handleSubmit = async (values: any) => {
-    console.log("Form submitted with values:", values); // Add log to check form values
+    console.log("Form submitted with values:", values);
     try {
       const { horaApertura, horaCierre, ...rest } = values;
       const sucursal: Sucursal = {
@@ -132,9 +149,9 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
         pais: values.pais,
         nombre: values.nombre,
       };
-      console.log("Sucursal to create:", sucursal); // Log the sucursal object
+      console.log("Sucursal to create:", sucursal);
       const token = await getAccessTokenSilently();
-      await crearSucursal(sucursal, token); // Llamar a la función crearSucursal
+      await crearSucursal(sucursal, token);
       notification.success({
         message: "Sucursal agregada",
         description: "Sucursal agregada correctamente",
@@ -144,7 +161,7 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
       cargarDatos();
       //window.location.reload();
     } catch (error) {
-      console.error("Error al crear la sucursal:", error); // Log the error
+      console.error("Error al crear la sucursal:", error);
       notification.error({
         message: "Error",
         description: "La sucursal no fue agregada, revise los datos",
@@ -170,14 +187,14 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
       onOk={handleOk}
       onCancel={handleCancel}
       footer={null}
-      width={800} // Aumentar el ancho del modal
+      width={800}
     >
       <Form
-        form={form} // Pasar la instancia del formulario al componente Form
+        form={form}
         layout="vertical"
         disabled={componentDisabled}
         initialValues={{ empresa: { id } }}
-        onFinish={handleSubmit} // Manejar el evento de envío del formulario
+        onFinish={handleSubmit}
       >
         <Row gutter={16}>
           <Col span={12}>

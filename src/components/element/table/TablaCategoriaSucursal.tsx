@@ -41,7 +41,8 @@ const ArbolCategoriaPorSucursal: React.FC<CategoryInputProps> = ({
     try {
       if (!selectedEmpresa || !selectedSucursal) return;
 
-      const url = `http://localhost:8080/api/local/traerTodo/${selectedSucursal}`;
+      //const url = `http://localhost:8080/api/local/traerTodo/${selectedSucursal}`;
+      const url = `http://localhost:8080/api/categorias/categoriasPadre/${selectedSucursal}`;
       const response = await fetch(url);
       const data: Category[] = await response.json();
 

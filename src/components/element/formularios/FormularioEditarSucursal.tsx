@@ -17,6 +17,7 @@ import {
 } from "../../../service/ServiceSucursal";
 import {
   getLocalidad,
+  getLocalidadesByProvincia,
   getPais,
   getProvincia,
 } from "../../../service/ServiceUbicacion";
@@ -25,6 +26,7 @@ import { Pais, Provincia, Localidad } from "../../../service/ServiceUbicacion";
 
 import moment from "moment";
 import { useAuth0 } from "@auth0/auth0-react";
+
 const { Option } = Select;
 
 interface FormularioEditarSucursalProps {
@@ -40,7 +42,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
   const [form] = Form.useForm();
-  const { getAccessTokenSilently } = useAuth0();
+
   const [paises, setPaises] = useState<Pais[]>([]);
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [localidades, setLocalidades] = useState<Localidad[]>([]);
@@ -48,6 +50,50 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
   const [nuevaImagenBase64, setNuevaImagenBase64] = useState<string | null>(
     null
   );
+  const [selectedPais, setSelectedPais] = useState<number | null>(null);
+  const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
+    null
+  );
+  const { getAccessTokenSilently } = useAuth0();
+  useEffect(() => {
+    getPais().then((data: Pais[]) => setPaises(data));
+  }, []);
+
+  useEffect(() => {
+    if (selectedPais) {
+      getProvincia().then((data: Provincia[]) => {
+        const provinciasFiltradas = data.filter(
+          (provincia) =>
+            provincia.pais.id ===
+            (selectedPais ? Number(selectedPais) : undefined)
+        );
+        setProvincias(provinciasFiltradas);
+      });
+    } else {
+      setProvincias([]);
+    }
+    setSelectedProvincia(null);
+    setLocalidades([]);
+  }, [selectedPais]);
+
+  useEffect(() => {
+    if (selectedProvincia) {
+      getLocalidadesByProvincia(selectedProvincia).then((data: Localidad[]) =>
+        setLocalidades(data)
+      );
+    } else {
+      setLocalidades([]);
+    }
+  }, [selectedProvincia]);
+  const handlePaisChange = (paisId: number) => {
+    setSelectedPais(paisId);
+    form.setFieldsValue({ provincia: undefined, localidad: undefined });
+  };
+
+  const handleProvinciaChange = (provinciaId: number) => {
+    setSelectedProvincia(provinciaId);
+    form.setFieldsValue({ localidad: undefined });
+  };
 
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -81,8 +127,8 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
 
       form.setFieldsValue({
         nombre: sucursalData.nombre,
-        horaApertura: moment(sucursalData.horaApertura, "HH:mm"), // Convertir a momento
-        horaCierre: moment(sucursalData.horaCierre, "HH:mm"), // Convertir a momento
+        horaApertura: moment(sucursalData.horaApertura, "HH:mm"),
+        horaCierre: moment(sucursalData.horaCierre, "HH:mm"),
         pais: sucursalData.domicilio.localidad.provincia.pais.nombre,
         provincia: sucursalData.domicilio.localidad.provincia.nombre,
         localidad: sucursalData.domicilio.localidad.nombre,
@@ -127,6 +173,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
         cp: values.cp,
         nombre: values.nombre,
       };
+
       const token = await getAccessTokenSilently();
       await actualizarSucursal(sucursalId!, updatedSucursal, token);
       notification.success({
@@ -235,6 +282,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
                     .toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }
+                onChange={handlePaisChange}
               >
                 {paises.map((pais) => (
                   <Option key={pais.id} value={String(pais.id)}>
@@ -254,10 +302,12 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
             >
               <Select
                 showSearch
+                disabled={!selectedPais}
                 filterOption={(input, option: any) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0
                 }
+                onChange={handleProvinciaChange}
               >
                 {provincias.map((provincia) => (
                   <Option key={provincia.id} value={String(provincia.id)}>
@@ -279,6 +329,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
             >
               <Select
                 showSearch
+                disabled={!selectedProvincia}
                 filterOption={(input, option: any) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0
